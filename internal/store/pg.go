@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/tern/v2/migrate"
 	"github.com/knadh/goyesql/v2"
@@ -14,7 +15,24 @@ import (
 
 type (
 	Queries struct {
-		InsertOfframpRequest string `query:"insert-offramp-request"`
+		InsertNonCustodialLink      string `query:"insert-non-custodial-link"`
+		GetNonCustodialLinkByPubKey string `query:"get-non-custodial-link-by-public-key"`
+		GetNonCustodialLinkByPhone  string `query:"get-non-custodial-link-by-phone"`
+		DeactivateNonCustodialLink  string `query:"deactivate-non-custodial-link"`
+
+		InsertOfframp             string `query:"insert-offramp"`
+		GetOfframpByPretiumID     string `query:"get-offramp-by-pretium-id"`
+		GetOfframpByTxHash        string `query:"get-offramp-by-tx-hash"`
+		GetOfframpByPhone         string `query:"get-offramp-by-phone"`
+		UpdateOfframpStatus       string `query:"update-offramp-status"`
+		UpdateOfframpMpesaConfirm string `query:"update-offramp-mpesa-confirmation"`
+
+		InsertOnramp             string `query:"insert-onramp"`
+		GetOnrampByPretiumID     string `query:"get-onramp-by-pretium-id"`
+		GetOnrampByTxHash        string `query:"get-onramp-by-tx-hash"`
+		GetOnrampByPhone         string `query:"get-onramp-by-phone"`
+		UpdateOnrampStatus       string `query:"update-onramp-status"`
+		UpdateOnrampMpesaConfirm string `query:"update-onramp-mpesa-confirmation"`
 	}
 
 	PgOpts struct {
@@ -61,6 +79,118 @@ func NewPgStore(o PgOpts) (Store, error) {
 
 func (s *Pg) Pool() *pgxpool.Pool {
 	return s.db
+}
+
+func (s *Pg) InsertNonCustodialLink(ctx context.Context, publicKey, phoneNumber string) error {
+	_, err := s.db.Exec(ctx, s.queries.InsertNonCustodialLink, publicKey, phoneNumber)
+	return err
+}
+
+func (s *Pg) GetNonCustodialLinkByPublicKey(ctx context.Context, publicKey string) (*NonCustodialLink, error) {
+	var link NonCustodialLink
+	if err := pgxscan.Get(ctx, s.db, &link, s.queries.GetNonCustodialLinkByPubKey, publicKey); err != nil {
+		return nil, err
+	}
+	return &link, nil
+}
+
+func (s *Pg) GetNonCustodialLinkByPhone(ctx context.Context, phoneNumber string) (*NonCustodialLink, error) {
+	var link NonCustodialLink
+	if err := pgxscan.Get(ctx, s.db, &link, s.queries.GetNonCustodialLinkByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return &link, nil
+}
+
+func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, phoneNumber string) error {
+	_, err := s.db.Exec(ctx, s.queries.DeactivateNonCustodialLink, phoneNumber)
+	return err
+}
+
+func (s *Pg) InsertOfframp(ctx context.Context, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress string) (int, error) {
+	var id int
+	err := s.db.QueryRow(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (s *Pg) GetOfframpByPretiumID(ctx context.Context, pretiumID string) (*Offramp, error) {
+	var offramp Offramp
+	if err := pgxscan.Get(ctx, s.db, &offramp, s.queries.GetOfframpByPretiumID, pretiumID); err != nil {
+		return nil, err
+	}
+	return &offramp, nil
+}
+
+func (s *Pg) GetOfframpByTxHash(ctx context.Context, txHash string) (*Offramp, error) {
+	var offramp Offramp
+	if err := pgxscan.Get(ctx, s.db, &offramp, s.queries.GetOfframpByTxHash, txHash); err != nil {
+		return nil, err
+	}
+	return &offramp, nil
+}
+
+func (s *Pg) GetOfframpsByPhone(ctx context.Context, phoneNumber string) ([]Offramp, error) {
+	var offramps []Offramp
+	if err := pgxscan.Select(ctx, s.db, &offramps, s.queries.GetOfframpByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return offramps, nil
+}
+
+func (s *Pg) UpdateOfframpStatus(ctx context.Context, pretiumStatus, pretiumID string) error {
+	_, err := s.db.Exec(ctx, s.queries.UpdateOfframpStatus, pretiumStatus, pretiumID)
+	return err
+}
+
+func (s *Pg) UpdateOfframpMpesaConfirmation(ctx context.Context, mpesaConfirmation, pretiumStatus string, id int) error {
+	_, err := s.db.Exec(ctx, s.queries.UpdateOfframpMpesaConfirm, mpesaConfirmation, pretiumStatus, id)
+	return err
+}
+
+func (s *Pg) InsertOnramp(ctx context.Context, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress string) (int, error) {
+	var id int
+	err := s.db.QueryRow(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (s *Pg) GetOnrampByPretiumID(ctx context.Context, pretiumID string) (*Onramp, error) {
+	var onramp Onramp
+	if err := pgxscan.Get(ctx, s.db, &onramp, s.queries.GetOnrampByPretiumID, pretiumID); err != nil {
+		return nil, err
+	}
+	return &onramp, nil
+}
+
+func (s *Pg) GetOnrampByTxHash(ctx context.Context, txHash string) (*Onramp, error) {
+	var onramp Onramp
+	if err := pgxscan.Get(ctx, s.db, &onramp, s.queries.GetOnrampByTxHash, txHash); err != nil {
+		return nil, err
+	}
+	return &onramp, nil
+}
+
+func (s *Pg) GetOnrampsByPhone(ctx context.Context, phoneNumber string) ([]Onramp, error) {
+	var onramps []Onramp
+	if err := pgxscan.Select(ctx, s.db, &onramps, s.queries.GetOnrampByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return onramps, nil
+}
+
+func (s *Pg) UpdateOnrampStatus(ctx context.Context, pretiumStatus, pretiumID string) error {
+	_, err := s.db.Exec(ctx, s.queries.UpdateOnrampStatus, pretiumStatus, pretiumID)
+	return err
+}
+
+func (s *Pg) UpdateOnrampMpesaConfirmation(ctx context.Context, mpesaConfirmation, pretiumStatus string, id int) error {
+	_, err := s.db.Exec(ctx, s.queries.UpdateOnrampMpesaConfirm, mpesaConfirmation, pretiumStatus, id)
+	return err
 }
 
 func loadQueries(queriesPath string) (*Queries, error) {

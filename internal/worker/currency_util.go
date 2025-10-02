@@ -7,10 +7,13 @@ import (
 	"github.com/govalues/decimal"
 )
 
-const stablesDecimals = 18
+func USDToKES(usdtAmountStr string, contractAddress string, kesRateStr float64) (string, error) {
+	var decimals = 6
+	if contractAddress == "0x765DE816845861e75A25fCA122bb6898B8B1282a" {
+		decimals = 18
+	}
 
-func USDToKES(usdtAmountStr string, kesRateStr string) (string, error) {
-	usdtString, err := weiToDecimalString(usdtAmountStr, stablesDecimals)
+	usdtString, err := weiToDecimalString(usdtAmountStr, decimals)
 	if err != nil {
 		return "", err
 	}
@@ -20,7 +23,7 @@ func USDToKES(usdtAmountStr string, kesRateStr string) (string, error) {
 		return "", err
 	}
 
-	rate, err := decimal.Parse(kesRateStr)
+	rate, err := decimal.NewFromFloat64(kesRateStr)
 	if err != nil {
 		return "", err
 	}

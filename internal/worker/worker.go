@@ -96,7 +96,8 @@ func (w *WorkerContainer) Client() *river.Client[pgx.Tx] {
 func setupWorkers(wc *WorkerContainer) (*river.Workers, error) {
 	workers := river.NewWorkers()
 
-	//
+	river.AddWorker(workers, &OfframpWorker{wc: wc})
+	river.AddWorker(workers, &CallbackWorker{wc: wc})
 
 	return workers, nil
 }

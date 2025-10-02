@@ -2,12 +2,17 @@ package sub
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"time"
 
+	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/grassrootseconomics/pretium-ramp/internal/worker"
+	"github.com/jackc/pgx/v5"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
+	"github.com/riverqueue/river"
 )
 
 type (
@@ -15,13 +20,23 @@ type (
 		Endpoint    string
 		JetStreamID string
 		Logg        *slog.Logger
+		QueueClient *river.Client[pgx.Tx]
 	}
 
 	JetStreamSub struct {
-		jsIter    jetstream.MessagesContext
-		logg      *slog.Logger
-		natsConn  *nats.Conn
-		durableID string
+		jsIter      jetstream.MessagesContext
+		logg        *slog.Logger
+		natsConn    *nats.Conn
+		durableID   string
+		queueClient *river.Client[pgx.Tx]
+	}
+
+	// TrackerMessage represents the NATS message payload
+	TrackerMessage struct {
+		InitiatorAddress string `json:"-"`
+		TransactionHash  string `json:"transactionHash"`
+		Amount           string `json:"amount"`
+		TokenAddress     string `json:"tokenAddress"`
 	}
 )
 
@@ -68,10 +83,11 @@ func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
 	}
 
 	return &JetStreamSub{
-		jsIter:    iter,
-		natsConn:  natsConn,
-		logg:      o.Logg,
-		durableID: o.JetStreamID,
+		jsIter:      iter,
+		natsConn:    natsConn,
+		logg:        o.Logg,
+		durableID:   o.JetStreamID,
+		queueClient: o.QueueClient,
 	}, nil
 }
 
@@ -92,6 +108,31 @@ func (s *JetStreamSub) Process() {
 			}
 		}
 
-		s.logg.Debug("processing nats message", "subject", msg.Subject())
+		var chainEvent event.Event
+		if err := json.Unmarshal(msg.Data(), &chainEvent); err != nil {
+			s.logg.Error("failed to unmarshal chain event", "error", err)
+			msg.Nak()
+			continue
+		}
+		_, err = s.queueClient.Insert(context.Background(), worker.OfframpArgs{
+			InitiatorAddress: chainEvent.Payload["from"].(string),
+			TransactionHash:  chainEvent.TxHash,
+			Amount:           chainEvent.Payload["value"].(string),
+			TokenAddress:     chainEvent.ContractAddress,
+		}, nil)
+
+		if err != nil {
+			s.logg.Error("failed to queue offramp job", "error", err)
+			msg.Nak()
+			continue
+		}
+
+		if err := msg.Ack(); err != nil {
+			s.logg.Error("failed to ack message", "error", err)
+		}
+
+		s.logg.Info("offramp job queued successfully",
+			"initiatorAddress", chainEvent.Payload["from"].(string),
+			"txHash", chainEvent.TxHash)
 	}
 }

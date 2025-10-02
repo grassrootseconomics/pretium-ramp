@@ -27,6 +27,16 @@ type (
 		Result      map[string]any `json:"result"`
 	}
 
+	ReverseLookupResponse struct {
+		Ok          bool                `json:"ok"`
+		Description string              `json:"description"`
+		Result      ReverseLookupResult `json:"result"`
+	}
+
+	ReverseLookupResult struct {
+		Phone string `json:"phone"`
+	}
+
 	ErrResponse struct {
 		Ok          bool   `json:"ok"`
 		Description string `json:"description"`
@@ -118,7 +128,7 @@ func parseResponse(resp *http.Response, target interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(target)
 }
 
-func (kv *KVVise) ReverseLookup(ctx context.Context, address string) (*OKResponse, error) {
+func (kv *KVVise) ReverseLookup(ctx context.Context, address string) (*ReverseLookupResponse, error) {
 	url := fmt.Sprintf("%s%slookup/reverse/%s", kv.endpoint, versionPath, address)
 
 	resp, err := kv.requestWithCtx(ctx, http.MethodGet, url, nil)
@@ -126,10 +136,10 @@ func (kv *KVVise) ReverseLookup(ctx context.Context, address string) (*OKRespons
 		return nil, err
 	}
 
-	var okResp OKResponse
-	if err := parseResponse(resp, &okResp); err != nil {
+	var lookupResp ReverseLookupResponse
+	if err := parseResponse(resp, &lookupResp); err != nil {
 		return nil, err
 	}
 
-	return &okResp, nil
+	return &lookupResp, nil
 }
