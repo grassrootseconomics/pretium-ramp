@@ -1,0 +1,24 @@
+[metrics]
+go_process = true
+
+[api]
+address = ":5097"
+
+[postgres]
+dsn = "postgres://postgres:postgres@127.0.0.1:5432/pretium_ramp"
+
+[kv_vise]
+endpoint = "http://localhost:5059/api/v1"
+api_key = ""
+
+[pretium]
+api_key = ""
+callback_url = ""
+
+[jetstream]
+endpoint = "nats://127.0.0.1:4222"
+id = "pretium-ramp-1"
+
+[telegram]
+bot_token = ""
+chat_id = 0
