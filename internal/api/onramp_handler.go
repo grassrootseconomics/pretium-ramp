@@ -35,7 +35,13 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 		})
 	}
 
-	link, err := a.store.GetNonCustodialLinkByPublicKey(req.Context(), onrampReq.Address)
+	tx, err := a.store.Pool().Begin(req.Context())
+	if err != nil {
+		return handlePostgresError(w, err)
+	}
+	defer tx.Rollback(req.Context())
+
+	link, err := a.store.GetNonCustodialLinkByPublicKey(req.Context(), tx, onrampReq.Address)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		a.logg.Error("failed to check non_custodial_link", "error", err)
 		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
@@ -89,8 +95,9 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 		})
 	}
 
-	onrampID, err := a.store.InsertOnramp(
+	err = a.store.InsertOnramp(
 		req.Context(),
+		tx,
 		onrampResp.Data.TransactionCode,
 		phoneNumber,
 		fmt.Sprintf("%.2f", onrampReq.Amount),
@@ -100,9 +107,14 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 	)
 	if err != nil {
 		a.logg.Error("failed to save onramp record", "error", err)
-	} else {
-		a.logg.Debug("onramp record saved", "id", onrampID)
+		return handlePostgresError(w, err)
 	}
+
+	if err := tx.Commit(req.Context()); err != nil {
+		return handlePostgresError(w, err)
+	}
+
+	a.logg.Debug("onramp record saved", "pretiumID", onrampResp.Data.TransactionCode)
 
 	return httputil.JSON(w, http.StatusOK, OKResponse{
 		Ok:          true,

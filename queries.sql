@@ -37,7 +37,7 @@ INSERT INTO offramp(
     amount_kes,
     tx_hash,
     token_address
-) VALUES($1, $2, $3, $4, $5, $6) RETURNING id;
+) VALUES($1, $2, $3, $4, $5, $6);
 
 --name: get-offramp-by-pretium-id
 -- $1: pretium_id
@@ -59,8 +59,15 @@ UPDATE offramp SET pretium_status = $1 WHERE pretium_id = $2;
 --name: update-offramp-mpesa-confirmation
 -- $1: mpesa_confirmation
 -- $2: pretium_status
--- $3: id
-UPDATE offramp SET mpesa_confirmation = $1, pretium_status = $2 WHERE id = $3;
+-- $3: pretium_id
+UPDATE offramp SET mpesa_confirmation = $1, pretium_status = $2 WHERE pretium_id = $3;
+
+--name: get-stale-offramps
+SELECT * FROM offramp 
+WHERE mpesa_confirmation IS NULL 
+  AND created_at < NOW() - INTERVAL '1 minute' 
+ORDER BY created_at ASC 
+LIMIT 100;
 
 --name: insert-onramp
 -- $1: pretium_id
@@ -76,7 +83,7 @@ INSERT INTO onramp(
     amount_kes,
     tx_hash,
     token_address
-) VALUES($1, $2, $3, $4, $5, $6) RETURNING id;
+) VALUES($1, $2, $3, $4, $5, $6);
 
 --name: get-onramp-by-pretium-id
 -- $1: pretium_id
@@ -98,5 +105,12 @@ UPDATE onramp SET pretium_status = $1 WHERE pretium_id = $2;
 --name: update-onramp-mpesa-confirmation
 -- $1: mpesa_confirmation
 -- $2: pretium_status
--- $3: id
-UPDATE onramp SET mpesa_confirmation = $1, pretium_status = $2 WHERE id = $3;
+-- $3: pretium_id
+UPDATE onramp SET mpesa_confirmation = $1, pretium_status = $2 WHERE pretium_id = $3;
+
+--name: get-stale-onramps
+SELECT * FROM onramp 
+WHERE mpesa_confirmation IS NULL 
+  AND created_at < NOW() - INTERVAL '1 minute' 
+ORDER BY created_at ASC 
+LIMIT 100;

@@ -27,7 +27,13 @@ type (
 func (OfframpArgs) Kind() string { return "OFFRAMP" }
 
 func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) error {
-	link, err := w.wc.store.GetNonCustodialLinkByPublicKey(ctx, job.Args.InitiatorAddress)
+	tx, err := w.wc.store.Pool().Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	link, err := w.wc.store.GetNonCustodialLinkByPublicKey(ctx, tx, job.Args.InitiatorAddress)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return fmt.Errorf("failed to check non_custodial_link: %w", err)
 	}
@@ -80,8 +86,9 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 
 	w.wc.logg.Info("pretium pay called", "transactionCode", payResp.Data.TransactionCode, "status", payResp.Data.Status)
 
-	offrampID, err := w.wc.store.InsertOfframp(
+	err = w.wc.store.InsertOfframp(
 		ctx,
+		tx,
 		payResp.Data.TransactionCode,
 		phoneNumber,
 		job.Args.Amount,
@@ -94,6 +101,6 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 		return nil
 	}
 
-	w.wc.logg.Debug("offramp record saved", "id", offrampID, "pretiumID", payResp.Data.TransactionCode)
-	return nil
+	w.wc.logg.Debug("offramp record saved", "pretiumID", payResp.Data.TransactionCode)
+	return tx.Commit(ctx)
 }

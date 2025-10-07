@@ -32,7 +32,10 @@ type (
 	}
 )
 
-const migrationTimeout = 15 * time.Second
+const (
+	migrationTimeout = 15 * time.Second
+	pollInterval     = 2 * time.Minute
+)
 
 func New(o WorkerOpts) (*WorkerContainer, error) {
 	workerContainer := &WorkerContainer{
@@ -70,8 +73,9 @@ func New(o WorkerOpts) (*WorkerContainer, error) {
 				MaxWorkers: o.MaxWorkers,
 			},
 		},
-		Workers: workers,
-		Logger:  o.Logg,
+		Workers:      workers,
+		PeriodicJobs: setupPollReceiptsCheck(),
+		Logger:       o.Logg,
 	})
 	if err != nil {
 		return nil, err
@@ -96,8 +100,23 @@ func (w *WorkerContainer) Client() *river.Client[pgx.Tx] {
 func setupWorkers(wc *WorkerContainer) (*river.Workers, error) {
 	workers := river.NewWorkers()
 
+	river.AddWorker(workers, &PollReceiptsWorker{wc: wc})
 	river.AddWorker(workers, &OfframpWorker{wc: wc})
 	river.AddWorker(workers, &CallbackWorker{wc: wc})
 
 	return workers, nil
+}
+
+func setupPollReceiptsCheck() []*river.PeriodicJob {
+	return []*river.PeriodicJob{
+		river.NewPeriodicJob(
+			river.PeriodicInterval(pollInterval),
+			func() (river.JobArgs, *river.InsertOpts) {
+				return PollReceiptsArgs{}, nil
+			},
+			&river.PeriodicJobOpts{
+				RunOnStart: true,
+			},
+		),
+	}
 }
