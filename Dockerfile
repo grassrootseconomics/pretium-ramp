@@ -11,7 +11,7 @@ WORKDIR /build
 
 COPY . .
 RUN go mod download
-RUN go build -o kv-vise-ru -ldflags="-X main.build=${BUILD} -s -w" cmd/main.go
+RUN go build -o pretium-ramp -ldflags="-X main.build=${BUILD} -s -w" cmd/main.go
 
 FROM debian:bookworm-slim
 
