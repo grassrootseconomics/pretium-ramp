@@ -114,6 +114,13 @@ func (s *JetStreamSub) Process() {
 			msg.Nak()
 			continue
 		}
+
+		if chainEvent.TxType != "TOKEN_TRANSFER" {
+			s.logg.Info("ignoring non-token transfer event", "txType", chainEvent.TxType, "txHash", chainEvent.TxHash)
+			msg.Ack()
+			continue
+		}
+
 		_, err = s.queueClient.Insert(context.Background(), worker.OfframpArgs{
 			InitiatorAddress: chainEvent.Payload["from"].(string),
 			TransactionHash:  chainEvent.TxHash,
