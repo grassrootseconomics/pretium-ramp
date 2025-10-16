@@ -16,6 +16,10 @@ SELECT * FROM non_custodial_link WHERE public_key = $1 AND active = true;
 -- $1: phone_number
 SELECT * FROM non_custodial_link WHERE phone_number = $1 AND active = true;
 
+--name: get-non-custodial-links-by-phone
+-- $1: phone_number
+SELECT * FROM non_custodial_link WHERE phone_number = $1 AND active = true ORDER BY created_at DESC;
+
 --name: deactivate-non-custodial-link
 -- $1: phone_number
 UPDATE non_custodial_link SET active = false WHERE phone_number = $1;
@@ -69,6 +73,11 @@ WHERE mpesa_confirmation IS NULL
 ORDER BY created_at ASC 
 LIMIT 100;
 
+--name: get-recent-offramps
+SELECT * FROM offramp 
+WHERE created_at >= NOW() - INTERVAL '3 days' 
+ORDER BY created_at DESC;
+
 --name: insert-onramp
 -- $1: pretium_id
 -- $2: phone_number
@@ -114,3 +123,8 @@ WHERE mpesa_confirmation IS NULL
   AND created_at < NOW() - INTERVAL '1 minute' 
 ORDER BY created_at ASC 
 LIMIT 100;
+
+--name: get-recent-onramps
+SELECT * FROM onramp 
+WHERE created_at >= NOW() - INTERVAL '3 days' 
+ORDER BY created_at DESC;

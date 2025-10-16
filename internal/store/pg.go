@@ -19,6 +19,7 @@ type (
 		InsertNonCustodialLink      string `query:"insert-non-custodial-link"`
 		GetNonCustodialLinkByPubKey string `query:"get-non-custodial-link-by-public-key"`
 		GetNonCustodialLinkByPhone  string `query:"get-non-custodial-link-by-phone"`
+		GetNonCustodialLinksByPhone string `query:"get-non-custodial-links-by-phone"`
 		DeactivateNonCustodialLink  string `query:"deactivate-non-custodial-link"`
 
 		InsertOfframp             string `query:"insert-offramp"`
@@ -26,6 +27,7 @@ type (
 		GetOfframpByTxHash        string `query:"get-offramp-by-tx-hash"`
 		GetOfframpByPhone         string `query:"get-offramp-by-phone"`
 		GetStaleOfframps          string `query:"get-stale-offramps"`
+		GetRecentOfframps         string `query:"get-recent-offramps"`
 		UpdateOfframpStatus       string `query:"update-offramp-status"`
 		UpdateOfframpMpesaConfirm string `query:"update-offramp-mpesa-confirmation"`
 
@@ -34,6 +36,7 @@ type (
 		GetOnrampByTxHash        string `query:"get-onramp-by-tx-hash"`
 		GetOnrampByPhone         string `query:"get-onramp-by-phone"`
 		GetStaleOnramps          string `query:"get-stale-onramps"`
+		GetRecentOnramps         string `query:"get-recent-onramps"`
 		UpdateOnrampStatus       string `query:"update-onramp-status"`
 		UpdateOnrampMpesaConfirm string `query:"update-onramp-mpesa-confirmation"`
 	}
@@ -105,6 +108,14 @@ func (s *Pg) GetNonCustodialLinkByPhone(ctx context.Context, tx pgx.Tx, phoneNum
 	return &link, nil
 }
 
+func (s *Pg) GetNonCustodialLinksByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]NonCustodialLink, error) {
+	var links []NonCustodialLink
+	if err := pgxscan.Select(ctx, tx, &links, s.queries.GetNonCustodialLinksByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return links, nil
+}
+
 func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNumber string) error {
 	_, err := tx.Exec(ctx, s.queries.DeactivateNonCustodialLink, phoneNumber)
 	return err
@@ -142,6 +153,14 @@ func (s *Pg) GetOfframpsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber stri
 func (s *Pg) GetStaleOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error) {
 	var offramps []Offramp
 	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetStaleOfframps); err != nil {
+		return nil, err
+	}
+	return offramps, nil
+}
+
+func (s *Pg) GetRecentOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error) {
+	var offramps []Offramp
+	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetRecentOfframps); err != nil {
 		return nil, err
 	}
 	return offramps, nil
@@ -189,6 +208,14 @@ func (s *Pg) GetOnrampsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber strin
 func (s *Pg) GetStaleOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error) {
 	var onramps []Onramp
 	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetStaleOnramps); err != nil {
+		return nil, err
+	}
+	return onramps, nil
+}
+
+func (s *Pg) GetRecentOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error) {
+	var onramps []Onramp
+	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetRecentOnramps); err != nil {
 		return nil, err
 	}
 	return onramps, nil

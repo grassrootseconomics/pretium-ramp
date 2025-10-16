@@ -68,6 +68,10 @@ func New(o APIOpts) *API {
 
 		g.POST(fmt.Sprintf("/callback/%s", o.CallbackSecret), api.callbackHandler)
 		g.POST("/trigger-onramp", api.onrampHandler)
+		g.POST("/link", api.createLinkHandler)
+		g.GET("/link/:phoneNumber", api.getLinksHandler)
+		g.GET("/transactions/:phoneNumber", api.getTransactionsByPhoneHandler)
+		g.GET("/transactions-recent", api.getRecentTransactionsHandler)
 	})
 
 	api.server = &http.Server{
