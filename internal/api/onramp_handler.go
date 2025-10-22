@@ -12,9 +12,10 @@ import (
 )
 
 type OnrampRequest struct {
-	Address string  `json:"address" validate:"required,eth_addr_checksum"`
-	Asset   string  `json:"asset" validate:"required,oneof=USDT USDC cUSD"`
-	Amount  float64 `json:"amount" validate:"required,gte=20,lte=250000"`
+	Address     string  `json:"address" validate:"required,eth_addr_checksum"`
+	PhoneNumber string  `json:"phoneNumber,omitempty"`
+	Asset       string  `json:"asset" validate:"required,oneof=USDT USDC cUSD"`
+	Amount      float64 `json:"amount" validate:"required,gte=20,lte=250000"`
 }
 
 func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error {
@@ -41,42 +42,49 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 	}
 	defer tx.Rollback(req.Context())
 
-	link, err := a.store.GetNonCustodialLinkByPublicKey(req.Context(), tx, onrampReq.Address)
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-		a.logg.Error("failed to check non_custodial_link", "error", err)
-		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
-			Ok:          false,
-			Description: "Internal server error",
-		})
-	}
-
 	var phoneNumber string
 
-	if link == nil || errors.Is(err, pgx.ErrNoRows) {
-		a.logg.Debug("address not found in non_custodial_link, checking kvvise", "address", onrampReq.Address)
-
-		resp, err := a.kvvise.ReverseLookup(req.Context(), onrampReq.Address)
-		if err != nil {
-			a.logg.Warn("reverse lookup failed", "address", onrampReq.Address, "error", err)
-			return httputil.JSON(w, http.StatusNotFound, ErrResponse{
-				Ok:          false,
-				Description: "Address not linked to any phone number",
-			})
-		}
-
-		if resp.Result.Phone == "" {
-			a.logg.Debug("no phone found in kvvise response", "address", onrampReq.Address)
-			return httputil.JSON(w, http.StatusNotFound, ErrResponse{
-				Ok:          false,
-				Description: "No phone number found for address",
-			})
-		}
-
-		phoneNumber = resp.Result.Phone
-		a.logg.Info("phone resolved from kvvise", "address", onrampReq.Address, "phone", phoneNumber)
+	// If phone number is provided directly, use it
+	if onrampReq.PhoneNumber != "" {
+		phoneNumber = onrampReq.PhoneNumber
+		a.logg.Info("using provided phone number", "address", onrampReq.Address, "phone", phoneNumber)
 	} else {
-		phoneNumber = link.PhoneNumber
-		a.logg.Info("phone resolved from database", "address", onrampReq.Address, "phone", phoneNumber)
+		// Otherwise, look it up from the database or KVVise
+		link, err := a.store.GetNonCustodialLinkByPublicKey(req.Context(), tx, onrampReq.Address)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			a.logg.Error("failed to check non_custodial_link", "error", err)
+			return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+				Ok:          false,
+				Description: "Internal server error",
+			})
+		}
+
+		if link == nil || errors.Is(err, pgx.ErrNoRows) {
+			a.logg.Debug("address not found in non_custodial_link, checking kvvise", "address", onrampReq.Address)
+
+			resp, err := a.kvvise.ReverseLookup(req.Context(), onrampReq.Address)
+			if err != nil {
+				a.logg.Warn("reverse lookup failed", "address", onrampReq.Address, "error", err)
+				return httputil.JSON(w, http.StatusNotFound, ErrResponse{
+					Ok:          false,
+					Description: "Address not linked to any phone number",
+				})
+			}
+
+			if resp.Result.Phone == "" {
+				a.logg.Debug("no phone found in kvvise response", "address", onrampReq.Address)
+				return httputil.JSON(w, http.StatusNotFound, ErrResponse{
+					Ok:          false,
+					Description: "No phone number found for address",
+				})
+			}
+
+			phoneNumber = resp.Result.Phone
+			a.logg.Info("phone resolved from kvvise", "address", onrampReq.Address, "phone", phoneNumber)
+		} else {
+			phoneNumber = link.PhoneNumber
+			a.logg.Info("phone resolved from database", "address", onrampReq.Address, "phone", phoneNumber)
+		}
 	}
 
 	onrampResp, err := a.pretium.Onramp(req.Context(), pretium.KES, pretium.OnrampBody{

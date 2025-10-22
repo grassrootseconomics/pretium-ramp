@@ -75,7 +75,7 @@ LIMIT 100;
 
 --name: get-recent-offramps
 SELECT * FROM offramp 
-WHERE created_at >= NOW() - INTERVAL '3 days' 
+WHERE created_at >= NOW() - INTERVAL '7 days' 
 ORDER BY created_at DESC;
 
 --name: insert-onramp
@@ -126,5 +126,5 @@ LIMIT 100;
 
 --name: get-recent-onramps
 SELECT * FROM onramp 
-WHERE created_at >= NOW() - INTERVAL '3 days' 
+WHERE created_at >= NOW() - INTERVAL '7 days' 
 ORDER BY created_at DESC;
