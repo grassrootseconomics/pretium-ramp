@@ -33,6 +33,11 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 	}
 	defer tx.Rollback(ctx)
 
+	// TODO: Inject the actual merhcnat address here instead of hardcoding
+	if job.Args.InitiatorAddress == "0x0000000000000000000000000000000000000000" || job.Args.InitiatorAddress == "0x8005ee53E57aB11E11eAA4EFe07Ee3835Dc02F98" {
+		return nil
+	}
+
 	link, err := w.wc.store.GetNonCustodialLinkByPublicKey(ctx, tx, job.Args.InitiatorAddress)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return fmt.Errorf("failed to check non_custodial_link: %w", err)
