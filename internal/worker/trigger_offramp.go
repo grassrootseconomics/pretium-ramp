@@ -35,6 +35,7 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 
 	// TODO: Inject the actual merhcnat address here instead of hardcoding
 	if job.Args.InitiatorAddress == "0x0000000000000000000000000000000000000000" || job.Args.InitiatorAddress == "0x8005ee53E57aB11E11eAA4EFe07Ee3835Dc02F98" {
+		w.wc.logg.Info("this is an onramp request from pretium ignoreing offramp", "address", job.Args.InitiatorAddress)
 		return nil
 	}
 
