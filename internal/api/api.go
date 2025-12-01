@@ -72,6 +72,7 @@ func New(o APIOpts) *API {
 		g.GET("/link/:phoneNumber", api.getLinksHandler)
 		g.GET("/transactions/:phoneNumber", api.getTransactionsByPhoneHandler)
 		g.GET("/transactions-recent", api.getRecentTransactionsHandler)
+		g.GET("/rates", api.getRatesHandler)
 	})
 
 	api.server = &http.Server{
