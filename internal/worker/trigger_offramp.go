@@ -87,7 +87,7 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 	})
 	if err != nil {
 		w.wc.logg.Error("pretium pay error", "error", err, "transactionHash", job.Args.TransactionHash, "shortcode", phoneNumber, "amount", kesAmount)
-		return nil
+		return fmt.Errorf("failed to call pretium pay: %w", err)
 	}
 
 	w.wc.logg.Info("pretium pay called", "transactionCode", payResp.Data.TransactionCode, "status", payResp.Data.Status)
@@ -104,7 +104,7 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 	)
 	if err != nil {
 		w.wc.logg.Error("failed to insert offramp record", "error", err, "pretiumID", payResp.Data.TransactionCode)
-		return nil
+		return fmt.Errorf("failed to insert offramp record: %w", err)
 	}
 
 	w.wc.logg.Debug("offramp record saved", "pretiumID", payResp.Data.TransactionCode)
