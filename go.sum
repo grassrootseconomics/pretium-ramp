@@ -49,12 +49,6 @@ github.com/govalues/decimal v0.1.36 h1:dojDpsSvrk0ndAx8+saW5h9WDIHdWpIwrH/yhl9ol
 github.com/govalues/decimal v0.1.36/go.mod h1:Ee7eI3Llf7hfqDZtpj8Q6NCIgJy1iY3kH1pSwDrNqlM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc h1:M+LgH0xwgs8YkWXt/OtWTKY9eFd/ga+wpb31u84e8FM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc/go.mod h1:sozWQ/ryva121mbV/BO6kelFrHjqds3aCRKPqGHTRzc=
-github.com/grassrootseconomics/pretium-go v1.2.0 h1:4qCxMWkMhDBGNKvsuaXkbe2X8g5G3GvdVx+e3Ss/mXY=
-github.com/grassrootseconomics/pretium-go v1.2.0/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
-github.com/grassrootseconomics/pretium-go v1.3.0 h1:pTa9ZmiNA1c9YwcvIVjKdIPrUYmdmbkrhhCBqMDsOEA=
-github.com/grassrootseconomics/pretium-go v1.3.0/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
-github.com/grassrootseconomics/pretium-go v1.3.1 h1:EGRoc4swnfzqP//GKttKLSsuhof74OSrJ2ejy1I/b9k=
-github.com/grassrootseconomics/pretium-go v1.3.1/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
 github.com/grassrootseconomics/pretium-go v1.3.2 h1:mCALlzUgktQBt/zhj/vomTniuRJu9LUsBFuxql+ewRQ=
 github.com/grassrootseconomics/pretium-go v1.3.2/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
 github.com/huandu/xstrings v1.5.0 h1:2ag3IFq9ZDANvthTwTiqSSZLjDc+BedvHPAp5tJy2TI=
@@ -65,8 +59,8 @@ github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsI
 github.com/jackc/pgpassfile v1.0.0/go.mod h1:CEx0iS5ambNFdcRtxPj5JhEz+xB6uRky5eyVu/W2HEg=
 github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 h1:iCEnooe7UlwOQYpKFhBabPMi4aNAfoODPEFNiAnClxo=
 github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761/go.mod h1:5TJZWKEWniPve33vlWYSoGYefn3gLQRzjfDlhSJ9ZKM=
-github.com/jackc/pgx/v5 v5.7.6 h1:rWQc5FwZSPX58r1OQmkuaNicxdmExaEz5A2DO2hUuTk=
-github.com/jackc/pgx/v5 v5.7.6/go.mod h1:aruU7o91Tc2q2cFp5h4uP3f6ztExVpyVv88Xl/8Vl8M=
+github.com/jackc/pgx/v5 v5.9.0 h1:T/dI+2TvmI2H8s/KH1/lXIbz1CUFk3gn5oTjr0/mBsE=
+github.com/jackc/pgx/v5 v5.9.0/go.mod h1:mal1tBGAFfLHvZzaYh77YS/eC6IX9OWbRV1QIIM0Jn4=
 github.com/jackc/puddle/v2 v2.2.2 h1:PR8nw+E/1w0GLuRFSmiioY6UooMp6KJv0/61nB7icHo=
 github.com/jackc/puddle/v2 v2.2.2/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/jackc/tern/v2 v2.3.3 h1:d6QNRyjk9HttJtSF5pUB8UaXrHwCgEai3/yxYjgci/k=
