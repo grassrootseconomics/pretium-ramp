@@ -66,6 +66,59 @@ func (a *API) getTransactionsByPhoneHandler(w http.ResponseWriter, req bunrouter
 	})
 }
 
+func (a *API) getTransactionsByAddressHandler(w http.ResponseWriter, req bunrouter.Request) error {
+	address := req.Param("address")
+	if address == "" {
+		return httputil.JSON(w, http.StatusBadRequest, ErrResponse{
+			Ok:          false,
+			Description: "Address is required",
+		})
+	}
+
+	tx, err := a.store.Pool().Begin(req.Context())
+	if err != nil {
+		return handlePostgresError(w, err)
+	}
+	defer tx.Rollback(req.Context())
+
+	onramps, err := a.store.GetOnrampsByWalletAddress(req.Context(), tx, address)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		a.logg.Error("failed to get onramps by wallet address", "error", err, "address", address)
+		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+			Ok:          false,
+			Description: "Internal server error",
+		})
+	}
+
+	offramps, err := a.store.GetOfframpsByWalletAddress(req.Context(), tx, address)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		a.logg.Error("failed to get offramps by wallet address", "error", err, "address", address)
+		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+			Ok:          false,
+			Description: "Internal server error",
+		})
+	}
+
+	if err := tx.Commit(req.Context()); err != nil {
+		return handlePostgresError(w, err)
+	}
+
+	a.logg.Info("transactions retrieved", "address", address, "onrampCount", len(onramps), "offrampCount", len(offramps))
+
+	result := map[string]any{
+		"address":    address,
+		"onramps":    onramps,
+		"offramps":   offramps,
+		"totalCount": len(onramps) + len(offramps),
+	}
+
+	return httputil.JSON(w, http.StatusOK, OKResponse{
+		Ok:          true,
+		Description: "Transactions retrieved successfully",
+		Result:      result,
+	})
+}
+
 func (a *API) getRecentTransactionsHandler(w http.ResponseWriter, req bunrouter.Request) error {
 	tx, err := a.store.Pool().Begin(req.Context())
 	if err != nil {

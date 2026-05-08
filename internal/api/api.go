@@ -71,6 +71,7 @@ func New(o APIOpts) *API {
 		g.POST("/link", api.createLinkHandler)
 		g.GET("/link/:phoneNumber", api.getLinksHandler)
 		g.GET("/transactions/:phoneNumber", api.getTransactionsByPhoneHandler)
+		g.GET("/transactions-by-address/:address", api.getTransactionsByAddressHandler)
 		g.GET("/transactions-recent", api.getRecentTransactionsHandler)
 		g.GET("/rates", api.getRatesHandler)
 	})

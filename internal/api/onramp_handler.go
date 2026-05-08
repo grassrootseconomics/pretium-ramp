@@ -112,6 +112,7 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 		fmt.Sprintf("%.2f", onrampReq.Amount),
 		"",
 		"",
+		onrampReq.Address,
 	)
 	if err != nil {
 		a.logg.Error("failed to save onramp record", "error", err)

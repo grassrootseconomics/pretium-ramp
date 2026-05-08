@@ -101,6 +101,7 @@ func (w *OfframpWorker) Work(ctx context.Context, job *river.Job[OfframpArgs]) e
 		kesAmount,
 		job.Args.TransactionHash,
 		job.Args.TokenAddress,
+		job.Args.InitiatorAddress,
 	)
 	if err != nil {
 		w.wc.logg.Error("failed to insert offramp record", "error", err, "pretiumID", payResp.Data.TransactionCode)

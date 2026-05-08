@@ -22,6 +22,7 @@ type (
 		AmountKES         string    `db:"amount_kes"`
 		TxHash            string    `db:"tx_hash"`
 		TokenAddress      string    `db:"token_address"`
+		WalletAddress     *string   `db:"wallet_address"`
 		CreatedAt         time.Time `db:"created_at"`
 		UpdatedAt         time.Time `db:"updated_at"`
 	}
@@ -36,6 +37,7 @@ type (
 		AmountKES         string    `db:"amount_kes"`
 		TxHash            string    `db:"tx_hash"`
 		TokenAddress      string    `db:"token_address"`
+		WalletAddress     *string   `db:"wallet_address"`
 		CreatedAt         time.Time `db:"created_at"`
 		UpdatedAt         time.Time `db:"updated_at"`
 	}
