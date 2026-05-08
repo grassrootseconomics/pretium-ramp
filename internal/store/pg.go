@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -125,7 +125,7 @@ func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNum
 }
 
 func (s *Pg) InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, strings.ToLower(walletAddress))
+	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, common.HexToAddress(walletAddress).Hex())
 	return err
 }
 
@@ -155,7 +155,7 @@ func (s *Pg) GetOfframpsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber stri
 
 func (s *Pg) GetOfframpsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Offramp, error) {
 	var offramps []Offramp
-	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetOfframpByWalletAddress, strings.ToLower(walletAddress)); err != nil {
+	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetOfframpByWalletAddress, common.HexToAddress(walletAddress).Hex()); err != nil {
 		return nil, err
 	}
 	return offramps, nil
@@ -188,7 +188,7 @@ func (s *Pg) UpdateOfframpMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpes
 }
 
 func (s *Pg) InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, strings.ToLower(walletAddress))
+	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, common.HexToAddress(walletAddress).Hex())
 	return err
 }
 
@@ -218,7 +218,7 @@ func (s *Pg) GetOnrampsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber strin
 
 func (s *Pg) GetOnrampsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Onramp, error) {
 	var onramps []Onramp
-	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetOnrampByWalletAddress, strings.ToLower(walletAddress)); err != nil {
+	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetOnrampByWalletAddress, common.HexToAddress(walletAddress).Hex()); err != nil {
 		return nil, err
 	}
 	return onramps, nil
