@@ -125,7 +125,7 @@ func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNum
 }
 
 func (s *Pg) InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, common.HexToAddress(walletAddress).Hex())
+	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, normalizeWalletAddress(walletAddress))
 	return err
 }
 
@@ -188,7 +188,7 @@ func (s *Pg) UpdateOfframpMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpes
 }
 
 func (s *Pg) InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, common.HexToAddress(walletAddress).Hex())
+	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, normalizeWalletAddress(walletAddress))
 	return err
 }
 

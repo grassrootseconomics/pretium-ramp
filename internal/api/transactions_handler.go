@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v5"
 	"github.com/kamikazechaser/common/httputil"
 	"github.com/uptrace/bunrouter"
@@ -74,6 +75,13 @@ func (a *API) getTransactionsByAddressHandler(w http.ResponseWriter, req bunrout
 			Description: "Address is required",
 		})
 	}
+	if !common.IsHexAddress(address) {
+		return httputil.JSON(w, http.StatusBadRequest, ErrResponse{
+			Ok:          false,
+			Description: "Invalid Ethereum address",
+		})
+	}
+	address = common.HexToAddress(address).Hex()
 
 	tx, err := a.store.Pool().Begin(req.Context())
 	if err != nil {
