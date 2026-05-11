@@ -18,7 +18,7 @@ require (
 	github.com/knadh/koanf/providers/env v1.1.0
 	github.com/knadh/koanf/providers/file v1.2.0
 	github.com/knadh/koanf/v2 v2.3.0
-	github.com/nats-io/nats.go v1.46.1
+	github.com/nats-io/nats.go v1.47.0
 	github.com/riverqueue/river v0.25.0
 	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.25.0
 	github.com/uptrace/bunrouter v1.0.23
