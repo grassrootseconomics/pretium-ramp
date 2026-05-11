@@ -178,13 +178,25 @@ func (s *Pg) GetRecentOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error
 }
 
 func (s *Pg) UpdateOfframpStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, pretiumID string) error {
-	_, err := tx.Exec(ctx, s.queries.UpdateOfframpStatus, pretiumStatus, pretiumID)
-	return err
+	tag, err := tx.Exec(ctx, s.queries.UpdateOfframpStatus, pretiumStatus, pretiumID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }
 
 func (s *Pg) UpdateOfframpMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpesaConfirmation, pretiumStatus, pretiumID string) error {
-	_, err := tx.Exec(ctx, s.queries.UpdateOfframpMpesaConfirm, mpesaConfirmation, pretiumStatus, pretiumID)
-	return err
+	tag, err := tx.Exec(ctx, s.queries.UpdateOfframpMpesaConfirm, mpesaConfirmation, pretiumStatus, pretiumID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }
 
 func (s *Pg) InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
@@ -241,13 +253,25 @@ func (s *Pg) GetRecentOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error) 
 }
 
 func (s *Pg) UpdateOnrampStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, pretiumID string) error {
-	_, err := tx.Exec(ctx, s.queries.UpdateOnrampStatus, pretiumStatus, pretiumID)
-	return err
+	tag, err := tx.Exec(ctx, s.queries.UpdateOnrampStatus, pretiumStatus, pretiumID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }
 
 func (s *Pg) UpdateOnrampMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpesaConfirmation, pretiumStatus, pretiumID string) error {
-	_, err := tx.Exec(ctx, s.queries.UpdateOnrampMpesaConfirm, mpesaConfirmation, pretiumStatus, pretiumID)
-	return err
+	tag, err := tx.Exec(ctx, s.queries.UpdateOnrampMpesaConfirm, mpesaConfirmation, pretiumStatus, pretiumID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }
 
 func loadQueries(queriesPath string) (*Queries, error) {
