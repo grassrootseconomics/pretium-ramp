@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -26,6 +27,7 @@ type (
 		GetOfframpByPretiumID     string `query:"get-offramp-by-pretium-id"`
 		GetOfframpByTxHash        string `query:"get-offramp-by-tx-hash"`
 		GetOfframpByPhone         string `query:"get-offramp-by-phone"`
+		GetOfframpByWalletAddress string `query:"get-offramp-by-wallet-address"`
 		GetStaleOfframps          string `query:"get-stale-offramps"`
 		GetRecentOfframps         string `query:"get-recent-offramps"`
 		UpdateOfframpStatus       string `query:"update-offramp-status"`
@@ -35,6 +37,7 @@ type (
 		GetOnrampByPretiumID     string `query:"get-onramp-by-pretium-id"`
 		GetOnrampByTxHash        string `query:"get-onramp-by-tx-hash"`
 		GetOnrampByPhone         string `query:"get-onramp-by-phone"`
+		GetOnrampByWalletAddress string `query:"get-onramp-by-wallet-address"`
 		GetStaleOnramps          string `query:"get-stale-onramps"`
 		GetRecentOnramps         string `query:"get-recent-onramps"`
 		UpdateOnrampStatus       string `query:"update-onramp-status"`
@@ -121,8 +124,8 @@ func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNum
 	return err
 }
 
-func (s *Pg) InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress)
+func (s *Pg) InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
+	_, err := tx.Exec(ctx, s.queries.InsertOfframp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, normalizeWalletAddress(walletAddress))
 	return err
 }
 
@@ -145,6 +148,14 @@ func (s *Pg) GetOfframpByTxHash(ctx context.Context, tx pgx.Tx, txHash string) (
 func (s *Pg) GetOfframpsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]Offramp, error) {
 	var offramps []Offramp
 	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetOfframpByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return offramps, nil
+}
+
+func (s *Pg) GetOfframpsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Offramp, error) {
+	var offramps []Offramp
+	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetOfframpByWalletAddress, common.HexToAddress(walletAddress).Hex()); err != nil {
 		return nil, err
 	}
 	return offramps, nil
@@ -176,8 +187,8 @@ func (s *Pg) UpdateOfframpMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpes
 	return err
 }
 
-func (s *Pg) InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress string) error {
-	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress)
+func (s *Pg) InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error {
+	_, err := tx.Exec(ctx, s.queries.InsertOnramp, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, normalizeWalletAddress(walletAddress))
 	return err
 }
 
@@ -200,6 +211,14 @@ func (s *Pg) GetOnrampByTxHash(ctx context.Context, tx pgx.Tx, txHash string) (*
 func (s *Pg) GetOnrampsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]Onramp, error) {
 	var onramps []Onramp
 	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetOnrampByPhone, phoneNumber); err != nil {
+		return nil, err
+	}
+	return onramps, nil
+}
+
+func (s *Pg) GetOnrampsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Onramp, error) {
+	var onramps []Onramp
+	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetOnrampByWalletAddress, common.HexToAddress(walletAddress).Hex()); err != nil {
 		return nil, err
 	}
 	return onramps, nil

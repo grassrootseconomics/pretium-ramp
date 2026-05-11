@@ -34,14 +34,16 @@ UPDATE non_custodial_link SET active = false WHERE phone_number = $1;
 -- $4: amount_kes
 -- $5: tx_hash
 -- $6: token_address
+-- $7: wallet_address
 INSERT INTO offramp(
     pretium_id,
     phone_number,
     amount_usd,
     amount_kes,
     tx_hash,
-    token_address
-) VALUES($1, $2, $3, $4, $5, $6);
+    token_address,
+    wallet_address
+) VALUES($1, $2, $3, $4, $5, $6, $7);
 
 --name: get-offramp-by-pretium-id
 -- $1: pretium_id
@@ -54,6 +56,10 @@ SELECT * FROM offramp WHERE tx_hash = $1;
 --name: get-offramp-by-phone
 -- $1: phone_number
 SELECT * FROM offramp WHERE phone_number = $1 ORDER BY created_at DESC;
+
+--name: get-offramp-by-wallet-address
+-- $1: wallet_address
+SELECT * FROM offramp WHERE wallet_address = $1 ORDER BY created_at DESC;
 
 --name: update-offramp-status
 -- $1: pretium_status
@@ -85,14 +91,16 @@ ORDER BY created_at DESC;
 -- $4: amount_kes
 -- $5: tx_hash
 -- $6: token_address
+-- $7: wallet_address
 INSERT INTO onramp(
     pretium_id,
     phone_number,
     amount_usd,
     amount_kes,
     tx_hash,
-    token_address
-) VALUES($1, $2, $3, $4, $5, $6);
+    token_address,
+    wallet_address
+) VALUES($1, $2, $3, $4, $5, $6, $7);
 
 --name: get-onramp-by-pretium-id
 -- $1: pretium_id
@@ -105,6 +113,10 @@ SELECT * FROM onramp WHERE tx_hash = $1;
 --name: get-onramp-by-phone
 -- $1: phone_number
 SELECT * FROM onramp WHERE phone_number = $1 ORDER BY created_at DESC;
+
+--name: get-onramp-by-wallet-address
+-- $1: wallet_address
+SELECT * FROM onramp WHERE wallet_address = $1 ORDER BY created_at DESC;
 
 --name: update-onramp-status
 -- $1: pretium_status

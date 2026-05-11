@@ -36,6 +36,9 @@ Returns all public keys linked to phone number
 ### GET /transactions/{phoneNumber}
 Returns all transactions for phone number
 
+### GET /transactions-by-address/{address}
+Returns all onramps and offramps where the supplied Ethereum address was used (onramp recipient or offramp initiator). Each record includes its `pretium_status` and `pretium_id` (reference). Returns 200 with empty arrays if the address has no recorded transactions. Note: only transactions created after the `wallet_address` column was added are queryable here.
+
 ### GET /transactions-recent
 Returns recent transactions (last 3 days)
 

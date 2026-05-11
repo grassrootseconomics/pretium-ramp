@@ -4,6 +4,7 @@ go 1.25.1
 
 require (
 	github.com/VictoriaMetrics/metrics v1.40.2
+	github.com/ethereum/go-ethereum v1.15.11
 	github.com/georgysavva/scany/v2 v2.1.4
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/govalues/decimal v0.1.36
@@ -39,6 +40,7 @@ require (
 	github.com/go-playground/validator/v10 v10.27.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/holiman/uint256 v1.3.2 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

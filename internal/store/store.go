@@ -16,19 +16,21 @@ type Store interface {
 	GetNonCustodialLinksByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]NonCustodialLink, error)
 	DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNumber string) error
 
-	InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress string) error
+	InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error
 	GetOfframpByPretiumID(ctx context.Context, tx pgx.Tx, pretiumID string) (*Offramp, error)
 	GetOfframpByTxHash(ctx context.Context, tx pgx.Tx, txHash string) (*Offramp, error)
 	GetOfframpsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]Offramp, error)
+	GetOfframpsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Offramp, error)
 	GetStaleOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error)
 	GetRecentOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error)
 	UpdateOfframpStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, pretiumID string) error
 	UpdateOfframpMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpesaConfirmation, pretiumStatus, pretiumID string) error
 
-	InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress string) error
+	InsertOnramp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber string, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error
 	GetOnrampByPretiumID(ctx context.Context, tx pgx.Tx, pretiumID string) (*Onramp, error)
 	GetOnrampByTxHash(ctx context.Context, tx pgx.Tx, txHash string) (*Onramp, error)
 	GetOnrampsByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]Onramp, error)
+	GetOnrampsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAddress string) ([]Onramp, error)
 	GetStaleOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error)
 	GetRecentOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error)
 	UpdateOnrampStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, pretiumID string) error

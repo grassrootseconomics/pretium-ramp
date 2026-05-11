@@ -13,6 +13,8 @@ github.com/cockroachdb/cockroach-go/v2 v2.2.0/go.mod h1:u3MiKYGupPPjkn3ozknpMUpx
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/ethereum/go-ethereum v1.15.11 h1:JK73WKeu0WC0O1eyX+mdQAVHUV+UR1a9VB/domDngBU=
+github.com/ethereum/go-ethereum v1.15.11/go.mod h1:mf8YiHIb0GR4x4TipcvBUPxJLw1mFdmxzoDi11sDRoI=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=
 github.com/fatih/color v1.18.0/go.mod h1:4FelSpRwEGDpQ12mAdzqdOukCy4u8WUtOY6lkT/6HfU=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
@@ -49,14 +51,10 @@ github.com/govalues/decimal v0.1.36 h1:dojDpsSvrk0ndAx8+saW5h9WDIHdWpIwrH/yhl9ol
 github.com/govalues/decimal v0.1.36/go.mod h1:Ee7eI3Llf7hfqDZtpj8Q6NCIgJy1iY3kH1pSwDrNqlM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc h1:M+LgH0xwgs8YkWXt/OtWTKY9eFd/ga+wpb31u84e8FM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc/go.mod h1:sozWQ/ryva121mbV/BO6kelFrHjqds3aCRKPqGHTRzc=
-github.com/grassrootseconomics/pretium-go v1.2.0 h1:4qCxMWkMhDBGNKvsuaXkbe2X8g5G3GvdVx+e3Ss/mXY=
-github.com/grassrootseconomics/pretium-go v1.2.0/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
-github.com/grassrootseconomics/pretium-go v1.3.0 h1:pTa9ZmiNA1c9YwcvIVjKdIPrUYmdmbkrhhCBqMDsOEA=
-github.com/grassrootseconomics/pretium-go v1.3.0/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
-github.com/grassrootseconomics/pretium-go v1.3.1 h1:EGRoc4swnfzqP//GKttKLSsuhof74OSrJ2ejy1I/b9k=
-github.com/grassrootseconomics/pretium-go v1.3.1/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
 github.com/grassrootseconomics/pretium-go v1.3.2 h1:mCALlzUgktQBt/zhj/vomTniuRJu9LUsBFuxql+ewRQ=
 github.com/grassrootseconomics/pretium-go v1.3.2/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
+github.com/holiman/uint256 v1.3.2 h1:a9EgMPSC1AAaj1SZL5zIQD3WbwTuHrMGOerLjGmM/TA=
+github.com/holiman/uint256 v1.3.2/go.mod h1:EOMSn4q6Nyt9P6efbI3bueV4e1b3dGlUCXeiRV4ng7E=
 github.com/huandu/xstrings v1.5.0 h1:2ag3IFq9ZDANvthTwTiqSSZLjDc+BedvHPAp5tJy2TI=
 github.com/huandu/xstrings v1.5.0/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
 github.com/jackc/pgerrcode v0.0.0-20240316143900-6e2875d9b438 h1:Dj0L5fhJ9F82ZJyVOmBx6msDp/kfd1t9GRfny/mfJA0=
