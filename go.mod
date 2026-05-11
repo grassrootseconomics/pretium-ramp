@@ -11,7 +11,7 @@ require (
 	github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc
 	github.com/grassrootseconomics/pretium-go v1.3.2
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/jackc/tern/v2 v2.3.3
+	github.com/jackc/tern/v2 v2.3.4
 	github.com/kamikazechaser/common v1.0.1-0.20241102071235-b1d359b0e63b
 	github.com/knadh/goyesql/v2 v2.2.0
 	github.com/knadh/koanf/parsers/toml v0.1.0
@@ -72,9 +72,9 @@ require (
 	go.opentelemetry.io/otel v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/goleak v1.3.0 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/crypto v0.46.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
