@@ -33,8 +33,9 @@ type (
 )
 
 const (
-	migrationTimeout = 15 * time.Second
-	pollInterval     = 2 * time.Minute
+	migrationTimeout   = 15 * time.Second
+	pollInterval       = 2 * time.Minute
+	statusPollInterval = 1 * time.Minute
 )
 
 func New(o WorkerOpts) (*WorkerContainer, error) {
@@ -74,7 +75,7 @@ func New(o WorkerOpts) (*WorkerContainer, error) {
 			},
 		},
 		Workers:      workers,
-		PeriodicJobs: setupPollReceiptsCheck(),
+		PeriodicJobs: append(setupPollReceiptsCheck(), setupPollStatusCheck()...),
 		Logger:       o.Logg,
 	})
 	if err != nil {
@@ -101,6 +102,7 @@ func setupWorkers(wc *WorkerContainer) (*river.Workers, error) {
 	workers := river.NewWorkers()
 
 	river.AddWorker(workers, &PollReceiptsWorker{wc: wc})
+	river.AddWorker(workers, &PollStatusWorker{wc: wc})
 	river.AddWorker(workers, &OfframpWorker{wc: wc})
 	river.AddWorker(workers, &CallbackWorker{wc: wc})
 
@@ -113,6 +115,20 @@ func setupPollReceiptsCheck() []*river.PeriodicJob {
 			river.PeriodicInterval(pollInterval),
 			func() (river.JobArgs, *river.InsertOpts) {
 				return PollReceiptsArgs{}, nil
+			},
+			&river.PeriodicJobOpts{
+				RunOnStart: true,
+			},
+		),
+	}
+}
+
+func setupPollStatusCheck() []*river.PeriodicJob {
+	return []*river.PeriodicJob{
+		river.NewPeriodicJob(
+			river.PeriodicInterval(statusPollInterval),
+			func() (river.JobArgs, *river.InsertOpts) {
+				return PollStatusArgs{}, nil
 			},
 			&river.PeriodicJobOpts{
 				RunOnStart: true,

@@ -80,9 +80,16 @@ ORDER BY created_at ASC
 LIMIT 100;
 
 --name: get-recent-offramps
-SELECT * FROM offramp 
-WHERE created_at >= NOW() - INTERVAL '7 days' 
+SELECT * FROM offramp
+WHERE created_at >= NOW() - INTERVAL '7 days'
 ORDER BY created_at DESC;
+
+--name: get-pending-offramps
+SELECT * FROM offramp
+WHERE mpesa_confirmation IS NULL
+  AND created_at >= NOW() - INTERVAL '24 hours'
+ORDER BY created_at ASC
+LIMIT 100;
 
 --name: insert-onramp
 -- $1: pretium_id
@@ -137,6 +144,13 @@ ORDER BY created_at ASC
 LIMIT 100;
 
 --name: get-recent-onramps
-SELECT * FROM onramp 
-WHERE created_at >= NOW() - INTERVAL '7 days' 
+SELECT * FROM onramp
+WHERE created_at >= NOW() - INTERVAL '7 days'
 ORDER BY created_at DESC;
+
+--name: get-pending-onramps
+SELECT * FROM onramp
+WHERE mpesa_confirmation IS NULL
+  AND created_at >= NOW() - INTERVAL '24 hours'
+ORDER BY created_at ASC
+LIMIT 100;

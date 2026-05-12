@@ -29,6 +29,7 @@ type (
 		GetOfframpByPhone         string `query:"get-offramp-by-phone"`
 		GetOfframpByWalletAddress string `query:"get-offramp-by-wallet-address"`
 		GetStaleOfframps          string `query:"get-stale-offramps"`
+		GetPendingOfframps        string `query:"get-pending-offramps"`
 		GetRecentOfframps         string `query:"get-recent-offramps"`
 		UpdateOfframpStatus       string `query:"update-offramp-status"`
 		UpdateOfframpMpesaConfirm string `query:"update-offramp-mpesa-confirmation"`
@@ -39,6 +40,7 @@ type (
 		GetOnrampByPhone         string `query:"get-onramp-by-phone"`
 		GetOnrampByWalletAddress string `query:"get-onramp-by-wallet-address"`
 		GetStaleOnramps          string `query:"get-stale-onramps"`
+		GetPendingOnramps        string `query:"get-pending-onramps"`
 		GetRecentOnramps         string `query:"get-recent-onramps"`
 		UpdateOnrampStatus       string `query:"update-onramp-status"`
 		UpdateOnrampMpesaConfirm string `query:"update-onramp-mpesa-confirmation"`
@@ -169,6 +171,14 @@ func (s *Pg) GetStaleOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error)
 	return offramps, nil
 }
 
+func (s *Pg) GetPendingOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error) {
+	var offramps []Offramp
+	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetPendingOfframps); err != nil {
+		return nil, err
+	}
+	return offramps, nil
+}
+
 func (s *Pg) GetRecentOfframps(ctx context.Context, tx pgx.Tx) ([]Offramp, error) {
 	var offramps []Offramp
 	if err := pgxscan.Select(ctx, tx, &offramps, s.queries.GetRecentOfframps); err != nil {
@@ -239,6 +249,14 @@ func (s *Pg) GetOnrampsByWalletAddress(ctx context.Context, tx pgx.Tx, walletAdd
 func (s *Pg) GetStaleOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error) {
 	var onramps []Onramp
 	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetStaleOnramps); err != nil {
+		return nil, err
+	}
+	return onramps, nil
+}
+
+func (s *Pg) GetPendingOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error) {
+	var onramps []Onramp
+	if err := pgxscan.Select(ctx, tx, &onramps, s.queries.GetPendingOnramps); err != nil {
 		return nil, err
 	}
 	return onramps, nil
