@@ -87,6 +87,29 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 		}
 	}
 
+	exchangeRateResp, err := a.pretium.ExchangeRate(req.Context(), pretium.ExchangeRateBody{
+		CurrencyCode: pretium.KES,
+	})
+	if err != nil {
+		a.logg.Error("failed to get exchange rate", "error", err)
+		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+			Ok:          false,
+			Description: "Failed to get exchange rate",
+		})
+	}
+
+	sellingRate := exchangeRateResp.Data.SellingRate
+	if sellingRate <= 0 {
+		a.logg.Error("invalid selling rate", "sellingRate", sellingRate)
+		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+			Ok:          false,
+			Description: "Invalid exchange rate",
+		})
+	}
+
+	usdAmount := onrampReq.Amount / sellingRate
+	a.logg.Debug("amount converted", "kes", onrampReq.Amount, "usd", usdAmount, "sellingRate", sellingRate)
+
 	onrampResp, err := a.pretium.Onramp(req.Context(), pretium.KES, pretium.OnrampBody{
 		Shortcode:     phoneNumber,
 		Amount:        onrampReq.Amount,
@@ -108,7 +131,7 @@ func (a *API) onrampHandler(w http.ResponseWriter, req bunrouter.Request) error 
 		tx,
 		onrampResp.Data.TransactionCode,
 		phoneNumber,
-		fmt.Sprintf("%.2f", onrampReq.Amount),
+		fmt.Sprintf("%.2f", usdAmount),
 		fmt.Sprintf("%.2f", onrampReq.Amount),
 		"",
 		"",
