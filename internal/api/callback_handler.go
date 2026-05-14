@@ -18,7 +18,12 @@ func (a *API) callbackHandler(w http.ResponseWriter, req bunrouter.Request) erro
 			Description: "Failed to read request body",
 		})
 	}
-	a.logg.Info("received callback payload", "transactionCode", payload.TransactionCode, "status", payload.Status, "message", payload.Message)
+	a.logg.Info("received callback payload",
+		"event", payload.Event(),
+		"transactionCode", payload.TransactionCode,
+		"status", payload.Status,
+		"message", payload.Message,
+	)
 
 	_, err = a.queueClient.Insert(req.Context(), worker.CallbackArgs{
 		Payload: payload,

@@ -44,6 +44,7 @@ type (
 		GetRecentOnramps         string `query:"get-recent-onramps"`
 		UpdateOnrampStatus       string `query:"update-onramp-status"`
 		UpdateOnrampMpesaConfirm string `query:"update-onramp-mpesa-confirmation"`
+		UpdateOnrampTxHash       string `query:"update-onramp-tx-hash"`
 	}
 
 	PgOpts struct {
@@ -283,6 +284,17 @@ func (s *Pg) UpdateOnrampStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, p
 
 func (s *Pg) UpdateOnrampMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpesaConfirmation, pretiumStatus, pretiumID string) error {
 	tag, err := tx.Exec(ctx, s.queries.UpdateOnrampMpesaConfirm, mpesaConfirmation, pretiumStatus, pretiumID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
+}
+
+func (s *Pg) UpdateOnrampTxHash(ctx context.Context, tx pgx.Tx, txHash, pretiumStatus, pretiumID string) error {
+	tag, err := tx.Exec(ctx, s.queries.UpdateOnrampTxHash, txHash, pretiumStatus, pretiumID)
 	if err != nil {
 		return err
 	}
