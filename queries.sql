@@ -136,6 +136,12 @@ UPDATE onramp SET pretium_status = $1 WHERE pretium_id = $2;
 -- $3: pretium_id
 UPDATE onramp SET mpesa_confirmation = $1, pretium_status = $2 WHERE pretium_id = $3;
 
+--name: update-onramp-tx-hash
+-- $1: tx_hash
+-- $2: pretium_status
+-- $3: pretium_id
+UPDATE onramp SET tx_hash = $1, pretium_status = COALESCE(NULLIF($2, ''), pretium_status) WHERE pretium_id = $3;
+
 --name: get-stale-onramps
 SELECT * FROM onramp 
 WHERE mpesa_confirmation IS NULL 

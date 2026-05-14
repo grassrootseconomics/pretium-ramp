@@ -37,4 +37,5 @@ type Store interface {
 	GetRecentOnramps(ctx context.Context, tx pgx.Tx) ([]Onramp, error)
 	UpdateOnrampStatus(ctx context.Context, tx pgx.Tx, pretiumStatus, pretiumID string) error
 	UpdateOnrampMpesaConfirmation(ctx context.Context, tx pgx.Tx, mpesaConfirmation, pretiumStatus, pretiumID string) error
+	UpdateOnrampTxHash(ctx context.Context, tx pgx.Tx, txHash, pretiumStatus, pretiumID string) error
 }

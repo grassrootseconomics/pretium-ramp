@@ -51,8 +51,8 @@ github.com/govalues/decimal v0.1.36 h1:dojDpsSvrk0ndAx8+saW5h9WDIHdWpIwrH/yhl9ol
 github.com/govalues/decimal v0.1.36/go.mod h1:Ee7eI3Llf7hfqDZtpj8Q6NCIgJy1iY3kH1pSwDrNqlM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc h1:M+LgH0xwgs8YkWXt/OtWTKY9eFd/ga+wpb31u84e8FM=
 github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc/go.mod h1:sozWQ/ryva121mbV/BO6kelFrHjqds3aCRKPqGHTRzc=
-github.com/grassrootseconomics/pretium-go v1.3.2 h1:mCALlzUgktQBt/zhj/vomTniuRJu9LUsBFuxql+ewRQ=
-github.com/grassrootseconomics/pretium-go v1.3.2/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
+github.com/grassrootseconomics/pretium-go v1.4.0 h1:R5+U1kQn9vRL75jYIw77+i/+g6QUkjMR2YKLf7xQpY4=
+github.com/grassrootseconomics/pretium-go v1.4.0/go.mod h1:e9Nt+Trg6T8m/3j5GkhC5XJum6tPrTJucvky7lUuBqQ=
 github.com/holiman/uint256 v1.3.2 h1:a9EgMPSC1AAaj1SZL5zIQD3WbwTuHrMGOerLjGmM/TA=
 github.com/holiman/uint256 v1.3.2/go.mod h1:EOMSn4q6Nyt9P6efbI3bueV4e1b3dGlUCXeiRV4ng7E=
 github.com/huandu/xstrings v1.5.0 h1:2ag3IFq9ZDANvthTwTiqSSZLjDc+BedvHPAp5tJy2TI=
