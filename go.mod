@@ -10,7 +10,7 @@ require (
 	github.com/govalues/decimal v0.1.36
 	github.com/grassrootseconomics/eth-tracker v1.10.3-celo-rc
 	github.com/grassrootseconomics/pretium-go v1.4.0
-	github.com/jackc/pgx/v5 v5.7.6
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/jackc/tern/v2 v2.3.3
 	github.com/kamikazechaser/common v1.0.1-0.20241102071235-b1d359b0e63b
 	github.com/knadh/goyesql/v2 v2.2.0
