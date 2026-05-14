@@ -115,6 +115,12 @@ func (s *JetStreamSub) Process() {
 			continue
 		}
 
+		if !chainEvent.Success {
+			s.logg.Info("ignoring failed transaction", "txHash", chainEvent.TxHash)
+			msg.Ack()
+			continue
+		}
+
 		if chainEvent.TxType != "TOKEN_TRANSFER" {
 			s.logg.Info("ignoring non-token transfer event", "txType", chainEvent.TxType, "txHash", chainEvent.TxHash)
 			msg.Ack()
