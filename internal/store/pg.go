@@ -17,11 +17,12 @@ import (
 
 type (
 	Queries struct {
-		InsertNonCustodialLink      string `query:"insert-non-custodial-link"`
-		GetNonCustodialLinkByPubKey string `query:"get-non-custodial-link-by-public-key"`
-		GetNonCustodialLinkByPhone  string `query:"get-non-custodial-link-by-phone"`
-		GetNonCustodialLinksByPhone string `query:"get-non-custodial-links-by-phone"`
-		DeactivateNonCustodialLink  string `query:"deactivate-non-custodial-link"`
+		InsertNonCustodialLink             string `query:"insert-non-custodial-link"`
+		GetNonCustodialLinkByPubKey        string `query:"get-non-custodial-link-by-public-key"`
+		GetNonCustodialLinkByPhone         string `query:"get-non-custodial-link-by-phone"`
+		GetNonCustodialLinksByPhone        string `query:"get-non-custodial-links-by-phone"`
+		DeactivateNonCustodialLink         string `query:"deactivate-non-custodial-link"`
+		DeactivateNonCustodialLinkByPubKey string `query:"deactivate-non-custodial-link-by-public-key"`
 
 		InsertOfframp             string `query:"insert-offramp"`
 		GetOfframpByPretiumID     string `query:"get-offramp-by-pretium-id"`
@@ -124,6 +125,11 @@ func (s *Pg) GetNonCustodialLinksByPhone(ctx context.Context, tx pgx.Tx, phoneNu
 
 func (s *Pg) DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNumber string) error {
 	_, err := tx.Exec(ctx, s.queries.DeactivateNonCustodialLink, phoneNumber)
+	return err
+}
+
+func (s *Pg) DeactivateNonCustodialLinkByPublicKey(ctx context.Context, tx pgx.Tx, publicKey string) error {
+	_, err := tx.Exec(ctx, s.queries.DeactivateNonCustodialLinkByPubKey, publicKey)
 	return err
 }
 

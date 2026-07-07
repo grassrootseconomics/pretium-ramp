@@ -24,6 +24,10 @@ SELECT * FROM non_custodial_link WHERE phone_number = $1 AND active = true ORDER
 -- $1: phone_number
 UPDATE non_custodial_link SET active = false WHERE phone_number = $1;
 
+--name: deactivate-non-custodial-link-by-public-key
+-- $1: public_key
+UPDATE non_custodial_link SET active = false WHERE public_key = $1;
+
 
 -- Offramp queries
 

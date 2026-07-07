@@ -15,6 +15,7 @@ type Store interface {
 	GetNonCustodialLinkByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) (*NonCustodialLink, error)
 	GetNonCustodialLinksByPhone(ctx context.Context, tx pgx.Tx, phoneNumber string) ([]NonCustodialLink, error)
 	DeactivateNonCustodialLink(ctx context.Context, tx pgx.Tx, phoneNumber string) error
+	DeactivateNonCustodialLinkByPublicKey(ctx context.Context, tx pgx.Tx, publicKey string) error
 
 	InsertOfframp(ctx context.Context, tx pgx.Tx, pretiumID, phoneNumber, amountUSD, amountKES, txHash, tokenAddress, walletAddress string) error
 	GetOfframpByPretiumID(ctx context.Context, tx pgx.Tx, pretiumID string) (*Offramp, error)

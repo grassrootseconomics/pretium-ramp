@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v5"
 	"github.com/kamikazechaser/common/httputil"
 	"github.com/uptrace/bunrouter"
@@ -62,12 +63,15 @@ func (a *API) createLinkHandler(w http.ResponseWriter, req bunrouter.Request) er
 				},
 			})
 		} else {
-			// Public key is linked to a different phone number
-			a.logg.Warn("public key already linked to different phone", "publicKey", linkReq.PublicKey, "existingPhone", existingLink.PhoneNumber, "requestedPhone", linkReq.PhoneNumber)
-			return httputil.JSON(w, http.StatusConflict, ErrResponse{
-				Ok:          false,
-				Description: "Public key already linked to a different phone number",
-			})
+			// Public key is linked to a different phone number. Re-link it:
+			// deactivate the stale link scoped to this public key (so other
+			// wallets sharing the old number keep their link) and insert the
+			// new one below.
+			a.logg.Info("re-linking public key to new phone", "publicKey", linkReq.PublicKey, "oldPhone", existingLink.PhoneNumber, "newPhone", linkReq.PhoneNumber)
+			if err := a.store.DeactivateNonCustodialLinkByPublicKey(req.Context(), tx, linkReq.PublicKey); err != nil {
+				a.logg.Error("failed to deactivate stale link", "error", err)
+				return handlePostgresError(w, err)
+			}
 		}
 	}
 
@@ -133,6 +137,67 @@ func (a *API) getLinksHandler(w http.ResponseWriter, req bunrouter.Request) erro
 			"phoneNumber": phoneNumber,
 			"links":       links,
 			"count":       len(links),
+		},
+	})
+}
+
+func (a *API) getLinkByAddressHandler(w http.ResponseWriter, req bunrouter.Request) error {
+	address := req.Param("address")
+	if address == "" {
+		return httputil.JSON(w, http.StatusBadRequest, ErrResponse{
+			Ok:          false,
+			Description: "Address is required",
+		})
+	}
+	if !common.IsHexAddress(address) {
+		return httputil.JSON(w, http.StatusBadRequest, ErrResponse{
+			Ok:          false,
+			Description: "Invalid Ethereum address",
+		})
+	}
+	address = common.HexToAddress(address).Hex()
+
+	tx, err := a.store.Pool().Begin(req.Context())
+	if err != nil {
+		return handlePostgresError(w, err)
+	}
+	defer tx.Rollback(req.Context())
+
+	link, err := a.store.GetNonCustodialLinkByPublicKey(req.Context(), tx, address)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		a.logg.Error("failed to get link by public key", "error", err, "address", address)
+		return httputil.JSON(w, http.StatusInternalServerError, ErrResponse{
+			Ok:          false,
+			Description: "Internal server error",
+		})
+	}
+
+	if err := tx.Commit(req.Context()); err != nil {
+		return handlePostgresError(w, err)
+	}
+
+	if link == nil {
+		a.logg.Info("no active link for address", "address", address)
+		return httputil.JSON(w, http.StatusOK, OKResponse{
+			Ok:          true,
+			Description: "No active link for address",
+			Result: map[string]any{
+				"address": address,
+				"linked":  false,
+			},
+		})
+	}
+
+	a.logg.Info("link retrieved", "address", address, "phoneNumber", link.PhoneNumber)
+
+	return httputil.JSON(w, http.StatusOK, OKResponse{
+		Ok:          true,
+		Description: "Link retrieved successfully",
+		Result: map[string]any{
+			"address":     address,
+			"linked":      true,
+			"publicKey":   link.PublicKey,
+			"phoneNumber": link.PhoneNumber,
 		},
 	})
 }
